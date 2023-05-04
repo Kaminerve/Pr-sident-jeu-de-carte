@@ -1,4 +1,5 @@
 import random
+
 class Jeu :
     """
     set de jeu et déroulement du Président
@@ -21,12 +22,18 @@ class Jeu :
         self.deck = []
         self.deck_joueurs = {}
         self.deck_joueurs_tri = {}
-        self.nb_player = int(input("Veuiller entrer le nombre de joueurs qui venlent jouer : "))
+        self.nb_joueurs = int(input("Veuiller entrer le nombre de joueurs qui veulent jouer : "))
+        self.ordre_joueurs = []
+        self.nb_parties = 0
+        self.titre = ["Président", "Vice président", "Vice trou du cul", "Trou du cul", "Citoyen"]
+        self.joueurs_avec_titre = {}
+        self.position = {}
+        for i in range(self.nb_joueurs) :
+            self.position[f"joueur_{i + 1}"] = 1
         
     def distribution(self):
         """
-        None --> Dict
-        Function that return the deck of each player
+        Method that split the deck of each player, randomly
         """
         
         for k in self.jeu_de_carte :
@@ -38,49 +45,79 @@ class Jeu :
                 
         random.shuffle(self.deck)
         
-        for i in range(self.nb_player) :
+        for i in range(self.nb_joueurs) :
             self.deck_joueurs[f"joueur_{i + 1}"] = 0
-            
-        if self.nb_player == 2 :
-            self.deck_joueurs["joueur_1"] = self.deck[: ((len(self.deck) + 1) // 2)]
-            self.deck_joueurs["joueur_2"] = self.deck[(len(self.deck) + 1) // 2 :]
-
-        return self.deck_joueurs
+        temp_1 = 0
+        temp_2 = (len(self.deck) + 1) // self.nb_joueurs
+        for k in self.deck_joueurs :    
+            self.deck_joueurs[k] = self.deck[temp_1 : temp_2]
+            temp_1 = temp_2
+            temp_2 = temp_2 * 2 + 1 
 
     def tri(self):
         """
-        None --> Dict
-        Function that return the deck of each player, but sorted
+        Method that sorted the deck of each player
         """
-        for i in range(self.nb_player) :
+        for i in range(self.nb_joueurs) :
             self.deck_joueurs_tri[f"joueur_{i+1}"] = []
-        if self.nb_player == 2 :
-            for k in self.deck_joueurs :
-                for i in self.liste_carte :
-                    for j in self.deck_joueurs[k] :
-                        if i in j :
-                            self.deck_joueurs_tri[k].append(j)
-            
-        return self.deck_joueurs_tri
-    
-    def __str__(self):
+        for k in self.deck_joueurs :
+            for i in self.liste_carte :
+                for j in self.deck_joueurs[k] :
+                    if i in j :
+                        self.deck_joueurs_tri[k].append(j)
+                
+    def ordre(self) :
         """
-        None --> Generator x Str
-        Function that show the set of each player
+        Method that verify who have the heart queen
         """
-        if self.nb_player == 2 :
-            yield f"\nLe joueur {self.nb_player - 1} a : \n"
-            for k in self.deck_joueurs_tri["joueur_1"] :
-                yield f"- {k}"
-            print(f"\nLe joueur {self.nb_player} a : \n")
-            for k in self.deck_joueurs_tri["joueur_2"] :
-                yield f"- {k}"
+        temp = []
+        if self.nb_parties == 0 :
+            for k in self.deck_joueurs_tri :
+                if "Q de ♥" in self.deck_joueurs_tri[k] :
+                    self.ordre_joueurs.append(k)
+                elif "Q de ♥" not in self.deck_joueurs_tri[k] :
+                    temp.append(k)
+                
+        if self.nb_parties > 0 :
+            for k in self.joueurs_avec_titre :
+                if self.joueurs_avec_titre[k] == "Trou du cul" :
+                    self.ordre_joueurs = [k]
+                elif not(self.joueurs_avec_titre[k] == "Trou du cul") :
+                    temp.append(k)
+                    
+        random.shuffle(temp)
         
+        for i in temp :
+            self.ordre_joueurs.append(i)
+    
+    
+    def affichage(self):
+        """
+        Method that show what happen during the game
+        """
+        compteur = self.nb_joueurs
+        for i in self.deck_joueurs_tri :
+            print(f"\n Le joueur {self.nb_joueurs - compteur + 1} a :\n")
+            compteur -= 1
+            for k in self.deck_joueurs_tri[i] :
+                print( f"- {k} ({self.position[i]})")
+                self.position[i] += 1
+                
+        print("\n \nL'ordre de chaque tour sera le suivant :")        
+        for i in range(1, len(self.ordre_joueurs) + 1) :
+            print(f"({i}) {self.ordre_joueurs[i - 1]}")
+            
+    
+    
+                
+                
+    
 
 
 
     
 jeu = Jeu()
-jeu.distribution()
-jeu.tri()
-str(jeu)
+print(jeu.distribution())
+print(jeu.tri())
+print(jeu.ordre())
+print(jeu.affichage())
