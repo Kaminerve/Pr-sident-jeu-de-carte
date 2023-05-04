@@ -1,0 +1,86 @@
+import random
+class Jeu :
+    """
+    set de jeu et déroulement du Président
+    """
+    
+    print("\n /// Président /// \n")
+    
+    def __init__(self):
+        """
+        None --> None
+        The constructor of Jeu
+        """
+        self.liste_carte = ["3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", 'K', 'A', "2", "joker"]
+        self.jeu_de_carte = {"♥" : ["3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", 'K', 'A', "2"],
+                             "♦" : ["3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", 'K', 'A', "2"],
+                             "♠" : ["3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", 'K', 'A', "2"],
+                             "♣" : ["3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", 'K', 'A', "2"],
+                             "joker" : ["rouge", "noir"]
+                             }
+        self.deck = []
+        self.deck_joueurs = {}
+        self.deck_joueurs_tri = {}
+        self.nb_player = int(input("Veuiller entrer le nombre de joueurs qui venlent jouer : "))
+        
+    def distribution(self):
+        """
+        None --> Dict
+        Function that return the deck of each player
+        """
+        
+        for k in self.jeu_de_carte :
+            for v in self.jeu_de_carte[k] :
+                if k == "joker" :
+                    self.deck.append(f"{k} {v}")
+                else :
+                    self.deck.append(f"{v} de {k}")
+                
+        random.shuffle(self.deck)
+        
+        for i in range(self.nb_player) :
+            self.deck_joueurs[f"joueur_{i + 1}"] = 0
+            
+        if self.nb_player == 2 :
+            self.deck_joueurs["joueur_1"] = self.deck[: ((len(self.deck) + 1) // 2)]
+            self.deck_joueurs["joueur_2"] = self.deck[(len(self.deck) + 1) // 2 :]
+
+        return self.deck_joueurs
+
+    def tri(self):
+        """
+        None --> Dict
+        Function that return the deck of each player, but sorted
+        """
+        for i in range(self.nb_player) :
+            self.deck_joueurs_tri[f"joueur_{i+1}"] = []
+        if self.nb_player == 2 :
+            for k in self.deck_joueurs :
+                for i in self.liste_carte :
+                    for j in self.deck_joueurs[k] :
+                        if i in j :
+                            self.deck_joueurs_tri[k].append(j)
+            
+        return self.deck_joueurs_tri
+    
+    def __str__(self):
+        """
+        None --> Generator x Str
+        Function that show the set of each player
+        """
+        if self.nb_player == 2 :
+            yield f"\nLe joueur {self.nb_player - 1} a : \n"
+            for k in self.deck_joueurs_tri["joueur_1"] :
+                yield f"- {k}"
+            print(f"\nLe joueur {self.nb_player} a : \n")
+            for k in self.deck_joueurs_tri["joueur_2"] :
+                yield f"- {k}"
+        
+
+
+
+    
+jeu = Jeu()
+jeu.distribution()
+jeu.tri()
+str(jeu)
