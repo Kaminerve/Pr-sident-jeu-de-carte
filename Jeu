@@ -52,14 +52,11 @@ class Jeu:
         for i in range(self.nb_joueurs):
             self.deck_joueurs[f"joueur_{i + 1}"] = []
         while len(self.deck) != 0 :
-            i = self.nb_joueurs
-            dividende = self.nb_joueurs
-            while dividende - i > self.nb_joueurs :
-                dividende += self.nb_joueurs
-            self.deck_joueurs[f"joueur_{dividende - i + 1}"].append(self.deck[- 1])
-            self.deck.pop()
-            i += 1
-
+            for k in self.deck_joueurs :
+                self.deck_joueurs[k].append(self.deck[-1])
+                self.deck.pop()
+                if len(self.deck) == 0 :
+                    break
         return self.deck_joueurs
 
     def tri(self):
