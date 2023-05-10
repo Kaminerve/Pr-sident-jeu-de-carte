@@ -1,4 +1,5 @@
-#Note : Problème de distribution
+#Note : Problème de distribution (réglé)
+#En train de coder le déroulement du jeu
 
 import random
 
@@ -15,6 +16,8 @@ class Jeu:
         None --> None
         The constructor of Jeu
         """
+        self.nb_joueurs = int(input("Veuiller entrer le nombre de joueurs qui veulent jouer : "))
+
         self.liste_carte = ["3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", 'K', 'A', "2", "joker"]
         self.jeu_de_carte = {"♥": ["3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", 'K', 'A', "2"],
                              "♦": ["3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", 'K', 'A', "2"],
@@ -22,17 +25,22 @@ class Jeu:
                              "♣": ["3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", 'K', 'A', "2"],
                              "joker": ["rouge", "noir"]
                              }
+
         self.deck = []
         self.deck_joueurs = {}
         self.deck_joueurs_tri = {}
-        self.nb_joueurs = int(input("Veuiller entrer le nombre de joueurs qui veulent jouer : "))
+
         self.ordre_joueurs = []
+
         self.nb_parties = 0
         self.titre = ["Président", "Vice président", "Vice trou du cul", "Trou du cul", "Citoyen"]
         self.joueurs_avec_titre = {}
+
         self.position = {}
         for i in range(self.nb_joueurs):
             self.position[f"joueur_{i + 1}"] = 1
+
+        self.selectionner_cartes = 0
 
     def distribution(self):
         """
@@ -110,6 +118,14 @@ class Jeu:
         print("\n \nL'ordre de chaque tour sera le suivant :")
         for i in range(1, len(self.ordre_joueurs) + 1):
             print(f"({i}) {self.ordre_joueurs[i - 1]}")
+
+    def utiliser_carte(self):
+        self.selectionner_cartes = tuple(input("Veuiller sélectionner la position de la carte ou les cartes "
+                                               "du même exemplaire que vous voulez jouer : "))
+        for elem in self.selectionner_cartes :
+       
+            
+
 
 
 jeu = Jeu()
