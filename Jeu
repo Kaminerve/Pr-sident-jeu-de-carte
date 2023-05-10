@@ -53,7 +53,10 @@ class Jeu:
             self.deck_joueurs[f"joueur_{i + 1}"] = []
         while len(self.deck) != 0 :
             i = self.nb_joueurs
-            self.deck_joueurs[f"joueur_{(i % self.nb_joueurs) + 1}"].append(self.deck[- 1])
+            dividende = self.nb_joueurs
+            while dividende - i > self.nb_joueurs :
+                dividende += self.nb_joueurs
+            self.deck_joueurs[f"joueur_{dividende - i + 1}"].append(self.deck[- 1])
             self.deck.pop()
             i += 1
 
