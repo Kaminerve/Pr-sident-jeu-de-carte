@@ -1,5 +1,5 @@
-#Note : Problème de distribution (réglé)
-#En train de coder le déroulement du jeu
+#Note : Problème de distribution
+#Toujours en train de built le déroulement
 
 import random
 
@@ -37,10 +37,13 @@ class Jeu:
         self.joueurs_avec_titre = {}
 
         self.position = {}
-        for i in range(self.nb_joueurs):
-            self.position[f"joueur_{i + 1}"] = 1
 
         self.selectionner_cartes = 0
+        self.exemplaires_cartes = 0
+        self.cartes = []
+        self.manche = []
+
+        self.fin_manche = False
 
     def distribution(self):
         """
@@ -103,11 +106,15 @@ class Jeu:
         for i in temp:
             self.ordre_joueurs.append(i)
 
+        return self.ordre_joueurs
+
     def affichage(self):
         """
         Method that show what happen during the game
         """
         compteur = self.nb_joueurs
+        for i in range(self.nb_joueurs):
+            self.position[f"joueur_{i + 1}"] = 1
         for i in self.deck_joueurs_tri:
             print(f"\n Le joueur {self.nb_joueurs - compteur + 1} a :\n")
             compteur -= 1
@@ -119,17 +126,77 @@ class Jeu:
         for i in range(1, len(self.ordre_joueurs) + 1):
             print(f"({i}) {self.ordre_joueurs[i - 1]}")
 
-    def utiliser_carte(self):
-        self.selectionner_cartes = tuple(input("Veuiller sélectionner la position de la carte ou les cartes "
-                                               "du même exemplaire que vous voulez jouer : "))
-        for elem in self.selectionner_cartes :
-       
-            
+    def show_ordre(self):
+        """
+        :return: self.ordre_joueurs
+        """
+        return self.ordre_joueurs
 
+    def utiliser_carte(self, joueur):
+        """
+        Process that show what card the player played
+        :param joueur: str
+        :return: None
+        """
+        self.cartes = []
+        if len(self.manche) == 0 :
+            self.exemplaires_cartes = int(input("Veuillez entrer le nombre d'exemplaires de cartes à jouer cette manche : "))
+
+        self.selectionner_cartes = input(f"Entrer la carte à {self.exemplaires_cartes} exemplaires que vous voulez jouer : ")
+
+        jsuis_tilte = []
+        for nb in self.deck_joueurs_tri[joueur] :
+            jsuis_tilte.append(nb[0])
+            if jsuis_tilte.count(self.selectionner_cartes) >= self.exemplaires_cartes :
+                for v in self.deck_joueurs_tri[joueur] :
+                    if self.selectionner_cartes in v :
+                        self.cartes.append(v)
+                        self.manche.append(v)
+                        self.deck_joueurs_tri[joueur].remove(v)
+        print(f"{joueur} a mis {self.cartes} ! ")
+        """
+        for i in self.selectionner_cartes :
+        for elem in self.selectionner_cartes:
+            self.cartes.append(self.deck_joueurs_tri[joueur][int(elem) - 1])
+        if self.cartes[0][0] == self.cartes[-1][0]:
+            for c in self.cartes :
+                self.deck_joueurs_tri[joueur].remove(c)
+            #for elem in self.selectionner_cartes:
+                #del self.deck_joueurs_tri[joueur][int(elem) - 1]
+        """
+
+    def affichage_cartes(self) :
+        compteur = self.nb_joueurs
+        for i in range(self.nb_joueurs):
+            self.position[f"joueur_{i + 1}"] = 1
+        for i in self.deck_joueurs_tri:
+            print(f"\n Le joueur {self.nb_joueurs - compteur + 1} a :\n")
+            compteur -= 1
+            for k in self.deck_joueurs_tri[i]:
+                print(f"- {k} ({self.position[i]})")
+                self.position[i] += 1
+
+
+    #def verif_fin_manche(self):
+        #"""
+        ##Function that verify if this is the hand of the turn
+        ##:return: Bool
+        #"""
+        #if self.cartes[-1][0] == "8" :
+            #self.fin_manche = True
+        #if self.cartes[-1][0] == "2" :
+            #conteste = str(input("Qui veut contester avec son joker ? (o/n)")
+            #if conteste == "o" :
 
 
 jeu = Jeu()
-print(jeu.distribution())
+jeu.distribution()
 jeu.tri()
 jeu.ordre()
 jeu.affichage()
+running = True
+while running :
+    for i in jeu.show_ordre():
+        print(f"Au tour de {i} !")
+        jeu.utiliser_carte(i)
+        jeu.affichage_cartes()
