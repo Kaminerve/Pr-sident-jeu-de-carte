@@ -1,6 +1,3 @@
-#Note : Problème de distribution
-#Toujours en train de built le déroulement
-
 import random
 
 
@@ -16,7 +13,6 @@ class Jeu:
         None --> None
         The constructor of Jeu
         """
-        self.nb_joueurs = int(input("Veuiller entrer le nombre de joueurs qui veulent jouer : "))
 
         self.liste_carte = ["3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", 'K', 'A', "2", "joker"]
         self.jeu_de_carte = {"♥": ["3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", 'K', 'A', "2"],
@@ -35,6 +31,13 @@ class Jeu:
         self.nb_parties = 0
         self.titre = ["Président", "Vice président", "Vice trou du cul", "Trou du cul", "Citoyen"]
         self.joueurs_avec_titre = {}
+
+        self.nb_joueurs = int(input("Veuiller entrer le nombre de joueurs qui veulent jouer : "))
+        self.noms = {}
+        if self.nb_parties == 0 :
+            for i in range(self.nb_joueurs):
+                prenom = input("Veuillez entrer votre nom de joueur : ")
+                self.noms[f"joueur_{i}"] = prenom
 
         self.position = {}
 
@@ -68,7 +71,6 @@ class Jeu:
                 self.deck.pop()
                 if len(self.deck) == 0 :
                     break
-        return self.deck_joueurs
 
     def tri(self):
         """
@@ -106,8 +108,6 @@ class Jeu:
         for i in temp:
             self.ordre_joueurs.append(i)
 
-        return self.ordre_joueurs
-
     def affichage(self):
         """
         Method that show what happen during the game
@@ -116,15 +116,15 @@ class Jeu:
         for i in range(self.nb_joueurs):
             self.position[f"joueur_{i + 1}"] = 1
         for i in self.deck_joueurs_tri:
-            print(f"\n Le joueur {self.nb_joueurs - compteur + 1} a :\n")
+            print(f"\n{self.noms[i]} a :\n")
             compteur -= 1
             for k in self.deck_joueurs_tri[i]:
-                print(f"- {k} ({self.position[i]})")
+                print(f"- {k} ({self.noms[self.position[i]]})")
                 self.position[i] += 1
 
         print("\n \nL'ordre de chaque tour sera le suivant :")
         for i in range(1, len(self.ordre_joueurs) + 1):
-            print(f"({i}) {self.ordre_joueurs[i - 1]}")
+            print(f"({i}) {self.noms[self.ordre_joueurs[i - 1]]}")
 
     def show_ordre(self):
         """
@@ -132,7 +132,7 @@ class Jeu:
         """
         return self.ordre_joueurs
 
-    def utiliser_carte(self, joueur):
+    def utiliser_carte(self, joueur, carte = None):
         """
         Process that show what card the player played
         :param joueur: str
@@ -141,54 +141,61 @@ class Jeu:
         self.cartes = []
         if len(self.manche) == 0 :
             self.exemplaires_cartes = int(input("Veuillez entrer le nombre d'exemplaires de cartes à jouer cette manche : "))
+        if carte == None :
+            self.selectionner_cartes = input(f"Entrer la carte à {self.exemplaires_cartes} exemplaires que vous voulez jouer : ")
 
-        self.selectionner_cartes = input(f"Entrer la carte à {self.exemplaires_cartes} exemplaires que vous voulez jouer : ")
+            jsuis_tilte = []
+            for nb in self.deck_joueurs_tri[joueur] :
+                jsuis_tilte.append(nb[0])
+                if jsuis_tilte.count(self.selectionner_cartes) >= self.exemplaires_cartes :
+                    for v in self.deck_joueurs_tri[joueur] :
+                        if self.selectionner_cartes in v :
+                            self.cartes.append(v)
+                            self.manche.append(v)
+                            self.deck_joueurs_tri[joueur].remove(v)
+            print(f"{joueur} a mis {self.cartes} ! ")
 
-        jsuis_tilte = []
-        for nb in self.deck_joueurs_tri[joueur] :
-            jsuis_tilte.append(nb[0])
-            if jsuis_tilte.count(self.selectionner_cartes) >= self.exemplaires_cartes :
-                for v in self.deck_joueurs_tri[joueur] :
-                    if self.selectionner_cartes in v :
-                        self.cartes.append(v)
-                        self.manche.append(v)
-                        self.deck_joueurs_tri[joueur].remove(v)
-        print(f"{joueur} a mis {self.cartes} ! ")
-        """
-        for i in self.selectionner_cartes :
-        for elem in self.selectionner_cartes:
-            self.cartes.append(self.deck_joueurs_tri[joueur][int(elem) - 1])
-        if self.cartes[0][0] == self.cartes[-1][0]:
-            for c in self.cartes :
-                self.deck_joueurs_tri[joueur].remove(c)
-            #for elem in self.selectionner_cartes:
-                #del self.deck_joueurs_tri[joueur][int(elem) - 1]
-        """
+            
 
     def affichage_cartes(self) :
+        """
+        Process that show the set of each player after deleting the using ones
+        :return: None
+        """
         compteur = self.nb_joueurs
         for i in range(self.nb_joueurs):
             self.position[f"joueur_{i + 1}"] = 1
         for i in self.deck_joueurs_tri:
-            print(f"\n Le joueur {self.nb_joueurs - compteur + 1} a :\n")
+            print(f"\n{self.noms[i]} a :\n")
             compteur -= 1
             for k in self.deck_joueurs_tri[i]:
-                print(f"- {k} ({self.position[i]})")
+                print(f"- {k} ({self.noms[self.position[i]]})")
                 self.position[i] += 1
 
-
-    #def verif_fin_manche(self):
-        #"""
-        ##Function that verify if this is the hand of the turn
-        ##:return: Bool
-        #"""
-        #if self.cartes[-1][0] == "8" :
-            #self.fin_manche = True
-        #if self.cartes[-1][0] == "2" :
-            #conteste = str(input("Qui veut contester avec son joker ? (o/n)")
-            #if conteste == "o" :
-
-
+    def verif_fin_manche(self):
+        """
+        Function that verify if this is the hand of the turn
+        :return: Bool
+        """
+        if self.cartes[-1][0] == "8" :
+            self.fin_manche = True
+        if self.cartes[-1][0] == "2" :
+            conteste = str(input("Qui veut contester avec son joker ? (o/n)")
+            if conteste == "o" :
+                blaze = str(input("Quel joueur êtes_vous ? "))
+                for k in self.noms :
+                    if self.noms[k] == blaze :
+                        for i in self.deck_joueurs_tri[k] :
+                            if "j" in i :
+                                self.utiliser_carte(k)
+                                conteste = input("Qui veut contester avec son 3 de ♣ ? (o/n)")
+                                if conteste == "o" :
+                                    blaze = str(input("Quel joueur êtes_vous ? "))
+                                                    for k in self.noms :
+                                                        if self.noms[k] == blaze :
+                                                            for i in self.deck_joueurs_tri[k] :
+                                                                if "j" in i :
+                                                                    self.utiliser_carte(k)
 jeu = Jeu()
 jeu.distribution()
 jeu.tri()
